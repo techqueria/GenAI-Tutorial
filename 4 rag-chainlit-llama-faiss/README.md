@@ -13,27 +13,41 @@ Our Camino de Santiago Expert leverages the following technologies to provide an
 
 This combination of technologies ensures that our chatbot is not only responsive and knowledgeable but also capable of understanding and processing complex queries with ease.
 
-## Installation
+## What You Will Learn
 
-To install the required dependencies, run the following command:
+This workshop is intentionally hands-on. By the end, participants will understand:
 
-```bash
-pip install -r requirements.txt
-```
+- **Embeddings 101:** how Camino PDFs become searchable vectors.
+- **Vector stores:** how FAISS stores and retrieves chunks for grounding.
+- **Mini AI agents:** how a Query Refiner, Document Coach, and Retrieval QA agent collaborate.
+- **Hallucination control:** why prompts explicitly reference sources and when to admit “I don’t know.”
+- **Local-first workflows:** running Llama 2 + FAISS on CPU-only laptops.
 
-## Documentation Ingestion
+Use the live Chainlit UI to watch each agent step print to the chat so learners connect theory to execution.
 
-Before running the Chainlit UI, ensure you have ingested the necessary documentation using the following command:
+## Quickstart
 
-```bash
-python ingest_docs.py
-```
+1. **Install dependencies**
 
-## Running the Chainlit UI
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-chainlit run app.py
-```
+2. **Ingest Camino PDFs into FAISS**
+
+   ```bash
+   python ingest.py && ls vectorstore/db_faiss
+   ```
+
+   The second command confirms that the FAISS index now exists before opening the UI.
+
+3. **Launch the Chainlit classroom UI**
+
+   ```bash
+   chainlit run app.py
+   ```
+
+   Ask a Camino question and watch each agent announce what it learned.
 
 ## Retrieval Augmented Generation
 
@@ -49,12 +63,10 @@ In RAG, the external data can come from multiple data sources, such as a documen
 
 ## Data Ingestion 
 
-1. Gathered Data about Camino de Santiago routes
-2. Using various travel guides and historical texts for Camino data
-3. Use the Facebook AI Similarity Search (Faiss) libaray to ingest the documents. 
-4. Using ***FAISS-CPU*** as **vector database** to store data in chunks, which will then help is in retrieving data chunks using semantic search
-
-Note: All the data is in the pdf format
+1. Gather Camino de Santiago PDFs and drop them into `data/`.
+2. Run `python ingest.py` to split, embed, and store chunks in FAISS.
+3. We use ***FAISS-CPU*** so every student laptop can follow along with semantic search.
+4. Verify that `vectorstore/db_faiss` exists before running Chainlit.
 
 ## Langchain 🦜️🔗
 
@@ -70,6 +82,18 @@ Llama 2 was pretrained on publicly available online data sources.
 The fine-tuned model, Llama Chat, leverages publicly available instruction datasets and over 1 million human annotations.
 
 - We are using the Llama2 with 7b (7 billion) parameters as our large language model, which takes the input query along with the context to get our desired result
+
+## Mini Agent Architecture
+
+To keep the learning experience interactive, the app now includes three lightweight agents that speak to students inside the Chainlit chat:
+
+| Agent | What Students Observe | Skill Taught |
+| --- | --- | --- |
+| **Query Refiner** | Rewrites the question before retrieval | Planning + query rewriting |
+| **Document Coach** | Summaries + citations from FAISS | Evidence gathering |
+| **Retrieval QA** | Final grounded answer | Prompting + hallucination control |
+
+Each message shows how the system reasons with documents before answering, reinforcing the RAG mental model.
 
 ## Chainlit 👋 (Gives User Interface)
 
