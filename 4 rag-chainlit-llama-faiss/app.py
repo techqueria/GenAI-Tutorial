@@ -133,10 +133,10 @@ def get_llm():
         _LLM = CTransformers(
             model="TheBloke/Llama-2-7B-Chat-GGML",
             model_type="llama",
-            temperature=0.5,
             max_new_tokens=256,
             # Increase context window to avoid frequent overflow warnings.
             config={"context_length": 2048},
+            temperature=0.5,
         )
     return _LLM
 
