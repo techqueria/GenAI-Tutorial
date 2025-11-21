@@ -131,11 +131,13 @@ def get_llm():
     global _LLM
     if _LLM is None:
         _LLM = CTransformers(
-            model="TheBloke/Llama-2-7B-Chat-GGML",
+            # Use a smaller/faster quantized GGUF for better CPU throughput.
+            model="TheBloke/Llama-2-7B-Chat-GGUF",
+            model_file="llama-2-7b-chat.Q4_K_M.gguf",
             model_type="llama",
-            max_new_tokens=256,
-            # Increase context window to avoid frequent overflow warnings.
-            config={"context_length": 2048},
+            max_new_tokens=128,
+            # Increase context window and let ctransformers use available threads.
+            config={"context_length": 2048, "threads": 0},
             temperature=0.5,
         )
     return _LLM
