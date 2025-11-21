@@ -1,9 +1,14 @@
 import time  # Import time module to measure execution time
 # Import necessary modules from langchain package
-from langchain.embeddings import HuggingFaceEmbeddings  # For generating embeddings from documents
-from langchain.vectorstores import FAISS  # For storing and searching vectors efficiently
-from langchain.document_loaders import PyPDFLoader, DirectoryLoader  # For loading documents from directories
-from langchain.text_splitter import RecursiveCharacterTextSplitter  # For splitting text into manageable chunks
+from langchain_community.document_loaders import (  # For loading documents from directories
+    DirectoryLoader,
+    PyPDFLoader,
+)
+from langchain_community.embeddings import HuggingFaceEmbeddings  # For generating embeddings from documents
+from langchain_community.vectorstores import FAISS  # For storing and searching vectors efficiently
+from langchain_text_splitters import (  # For splitting text into manageable chunks
+    RecursiveCharacterTextSplitter,
+)
 
 # Define paths for data and the FAISS database
 DATA_PATH = "./data/"  # Path to the directory containing PDF documents
