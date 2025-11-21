@@ -1,12 +1,12 @@
 from typing import List
 
 import chainlit as cl
-from langchain import PromptTemplate
 from langchain.chains import LLMChain, RetrievalQA
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.llms import CTransformers
-from langchain.schema import Document
-from langchain.vectorstores import FAISS
+from langchain_core.documents import Document
+from langchain_core.prompts import PromptTemplate
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.llms import CTransformers
+from langchain_community.vectorstores import FAISS
 
 # Path to the FAISS database used for vector storage
 DB_FAISS_PATH = "vectorstore/db_faiss"
@@ -133,8 +133,10 @@ def get_llm():
         _LLM = CTransformers(
             model="TheBloke/Llama-2-7B-Chat-GGML",
             model_type="llama",
-            max_new_tokens=512,
             temperature=0.5,
+            max_new_tokens=256,
+            # Increase context window to avoid frequent overflow warnings.
+            config={"context_length": 2048},
         )
     return _LLM
 
@@ -226,7 +228,12 @@ async def main(message):
     reasoning pipeline before the final grounded answer is streamed back to them.
     """
     chain = cl.user_session.get("chain")
-    user_query = (message.content or "").strip()
+
+    # Chainlit 0.7 sometimes passes raw strings instead of Message objects.
+    if isinstance(message, str):
+        user_query = message.strip()
+    else:
+        user_query = (message.content or "").strip()
     if not user_query:
         await cl.Message(content="Please enter a question about the Camino de Santiago.").send()
         return
